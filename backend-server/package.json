@@ -1,0 +1,32 @@
+{
+  "name": "backend-server",
+  "version": "1.0.0",
+  "description": "SmartMotion SDK Backend Server",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "keywords": [
+    "smartmotion",
+    "sdk",
+    "nodejs",
+    "express",
+    "firebase",
+    "h3"
+  ],
+  "author": "Maya Yakobi",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "firebase-admin": "^14.1.0",
+    "h3-js": "^4.4.0",
+    "sqlite3": "^6.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
