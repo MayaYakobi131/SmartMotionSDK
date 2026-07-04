@@ -11,7 +11,8 @@ type HeatmapCell = {
   source?: string;
 };
 
-const API_BASE_URL = "http://localhost:3000/api";
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
 
 function getCellColor(count: number) {
   if (count >= 4) return "#F87171";
