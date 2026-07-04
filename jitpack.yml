@@ -2,7 +2,7 @@ jdk:
   - openjdk17
 
 before_install:
-  - cd android-demo && chmod +x gradlew
+  - chmod +x gradlew
 
 install:
-  - cd android-demo && ./gradlew :smartmotion-sdk:publishToMavenLocal
+  - ./gradlew :smartmotion-sdk:publishToMavenLocal
