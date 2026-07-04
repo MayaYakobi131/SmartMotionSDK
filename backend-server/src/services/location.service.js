@@ -23,15 +23,16 @@ const saveLocation = async (locationData) => {
     const result = await database.run(
         `
         INSERT INTO locations (
-            userId,
-            appId,
+            "userId",
+            "appId",
             latitude,
             longitude,
-            h3Index,
+            "h3Index",
             timestamp,
-            receivedAt
+            "receivedAt"
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING id
         `,
         [
             locationData.userId,
@@ -46,7 +47,7 @@ const saveLocation = async (locationData) => {
 
     return {
         id: `live_${locationData.userId}`,
-        eventId: result.lastID,
+        eventId: result.rows[0].id,
         ...locationData,
         h3Index,
         updatedAt: receivedAt
@@ -58,12 +59,12 @@ const getAllLocations = async () => {
         SELECT l1.*
         FROM locations l1
         INNER JOIN (
-            SELECT userId, MAX(id) AS latestId
+            SELECT "userId", MAX(id) AS "latestId"
             FROM locations
-            GROUP BY userId
+            GROUP BY "userId"
         ) l2
-        ON l1.userId = l2.userId AND l1.id = l2.latestId
-        ORDER BY l1.receivedAt DESC
+        ON l1."userId" = l2."userId" AND l1.id = l2."latestId"
+        ORDER BY l1."receivedAt" DESC
     `);
 
     return rows.map((row) => ({
@@ -84,7 +85,7 @@ const getStats = async () => {
     const liveLocations = await getAllLocations();
 
     const historyRow = await database.get(`
-        SELECT COUNT(*) AS total
+        SELECT COUNT(*)::int AS total
         FROM locations
     `);
 

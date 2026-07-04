@@ -1,72 +1,59 @@
-const sqlite3 = require("sqlite3").verbose();
-const path = require("path");
+require("dotenv").config();
 
-const dbPath = path.join(__dirname, "../../smartmotion.db");
+const { Pool } = require("pg");
 
-console.log("Database path:", dbPath);
-
-const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-        console.error("Database connection failed:", err.message);
-    } else {
-        console.log("SQLite database connected.");
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
     }
 });
 
-db.serialize(() => {
-    db.run(`
+const initDatabase = async () => {
+    await pool.query(`
         CREATE TABLE IF NOT EXISTS locations (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            userId TEXT NOT NULL,
-            appId TEXT NOT NULL,
-            latitude REAL NOT NULL,
-            longitude REAL NOT NULL,
-            h3Index TEXT NOT NULL,
+            id SERIAL PRIMARY KEY,
+            "userId" TEXT NOT NULL,
+            "appId" TEXT NOT NULL,
+            latitude DOUBLE PRECISION NOT NULL,
+            longitude DOUBLE PRECISION NOT NULL,
+            "h3Index" TEXT NOT NULL,
             timestamp TEXT NOT NULL,
-            receivedAt TEXT NOT NULL
+            "receivedAt" TEXT NOT NULL
         )
     `);
 
-    db.run(`
+    await pool.query(`
         CREATE INDEX IF NOT EXISTS idx_locations_userId
-        ON locations(userId)
+        ON locations("userId")
     `);
 
-    db.run(`
+    await pool.query(`
         CREATE INDEX IF NOT EXISTS idx_locations_h3Index
-        ON locations(h3Index)
+        ON locations("h3Index")
     `);
-});
 
-const run = (sql, params = []) => {
-    return new Promise((resolve, reject) => {
-        db.run(sql, params, function (err) {
-            if (err) reject(err);
-            else resolve(this);
-        });
-    });
+    console.log("PostgreSQL database connected and initialized.");
 };
 
-const all = (sql, params = []) => {
-    return new Promise((resolve, reject) => {
-        db.all(sql, params, (err, rows) => {
-            if (err) reject(err);
-            else resolve(rows);
-        });
-    });
+const run = async (sql, params = []) => {
+    const result = await pool.query(sql, params);
+    return result;
 };
 
-const get = (sql, params = []) => {
-    return new Promise((resolve, reject) => {
-        db.get(sql, params, (err, row) => {
-            if (err) reject(err);
-            else resolve(row);
-        });
-    });
+const all = async (sql, params = []) => {
+    const result = await pool.query(sql, params);
+    return result.rows;
+};
+
+const get = async (sql, params = []) => {
+    const result = await pool.query(sql, params);
+    return result.rows[0];
 };
 
 module.exports = {
-    db,
+    pool,
+    initDatabase,
     run,
     all,
     get
