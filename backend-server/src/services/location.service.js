@@ -1,16 +1,7 @@
 const database = require("./database.service");
 const { convertLocationToH3 } = require("./h3.service");
 
-const demoLiveUsers = [
-    { userId: "demo_1", latitude: 32.0822, longitude: 34.7688, appId: "demo_android_app" },
-    { userId: "demo_2", latitude: 32.0824, longitude: 34.7690, appId: "demo_android_app" },
-    { userId: "demo_3", latitude: 32.0826, longitude: 34.7692, appId: "demo_android_app" },
-    { userId: "demo_4", latitude: 32.0844, longitude: 34.7704, appId: "demo_android_app" },
-    { userId: "demo_5", latitude: 32.0846, longitude: 34.7706, appId: "demo_android_app" },
-    { userId: "demo_6", latitude: 32.0848, longitude: 34.7708, appId: "demo_android_app" },
-    { userId: "demo_7", latitude: 32.0865, longitude: 34.7735, appId: "demo_android_app" },
-    { userId: "demo_8", latitude: 32.0885, longitude: 34.7780, appId: "demo_android_app" }
-];
+const ACTIVE_USER_WINDOW_MINUTES = 5;
 
 const saveLocation = async (locationData) => {
     const h3Index = convertLocationToH3(
@@ -55,7 +46,8 @@ const saveLocation = async (locationData) => {
 };
 
 const getAllLocations = async () => {
-    const rows = await database.all(`
+    const rows = await database.all(
+        `
         SELECT l1.*
         FROM locations l1
         INNER JOIN (
@@ -64,8 +56,10 @@ const getAllLocations = async () => {
             GROUP BY "userId"
         ) l2
         ON l1."userId" = l2."userId" AND l1.id = l2."latestId"
+        WHERE l1."receivedAt" >= NOW() - INTERVAL '${ACTIVE_USER_WINDOW_MINUTES} minutes'
         ORDER BY l1."receivedAt" DESC
-    `);
+        `
+    );
 
     return rows.map((row) => ({
         id: `live_${row.userId}`,
@@ -135,10 +129,6 @@ const buildHeatmap = async () => {
 
     liveLocations.forEach((location) => {
         addLocationToArea(location, "real");
-    });
-
-    demoLiveUsers.forEach((location) => {
-        addLocationToArea(location, "demo");
     });
 
     return Object.values(areaMap).map((area) => ({
