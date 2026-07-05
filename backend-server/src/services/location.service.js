@@ -46,6 +46,10 @@ const saveLocation = async (locationData) => {
 };
 
 const getAllLocations = async () => {
+    const activeSince = new Date(
+        Date.now() - ACTIVE_USER_WINDOW_MINUTES * 60 * 1000
+    ).toISOString();
+
     const rows = await database.all(
         `
         SELECT l1.*
@@ -53,12 +57,13 @@ const getAllLocations = async () => {
         INNER JOIN (
             SELECT "userId", MAX(id) AS "latestId"
             FROM locations
+            WHERE "receivedAt" >= $1
             GROUP BY "userId"
         ) l2
         ON l1."userId" = l2."userId" AND l1.id = l2."latestId"
-        WHERE l1."receivedAt" >= NOW() - INTERVAL '${ACTIVE_USER_WINDOW_MINUTES} minutes'
         ORDER BY l1."receivedAt" DESC
-        `
+        `,
+        [activeSince]
     );
 
     return rows.map((row) => ({
