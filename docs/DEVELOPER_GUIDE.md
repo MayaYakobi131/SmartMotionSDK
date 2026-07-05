@@ -2,36 +2,17 @@
 
 Welcome to the SmartMotion SDK Developer Guide.
 
-This guide explains how to integrate the SmartMotion SDK into an Android application, how to start location tracking, how location events are processed by the backend, and how to monitor live data using the SmartMotion Dashboard.
+This guide explains how to integrate the SmartMotion SDK into an Android application, configure the SDK, start location tracking, and monitor live data using the SmartMotion Dashboard.
 
-The guide is intended for Android developers who want to quickly integrate the SDK and understand the complete workflow of the SmartMotion platform.
-
----
-
-# SmartMotion Dashboard
-
-The SmartMotion Dashboard is available online:
-
-### https://smart-motion-f95mi8i9y-maya-yakobi.vercel.app/
-
-The dashboard displays live information received from the backend, including:
-
-- Live Users
-- History Events
-- Active H3 Areas
-- Connected Applications
-- Live Heatmap
-- Analytics Charts
-
-The dashboard refreshes automatically every five seconds while the backend is running and new location events are received.
+The guide is intended for Android developers who want to integrate the SDK into their applications and understand how the SmartMotion platform works.
 
 ---
 
 # Who Can Use SmartMotion SDK?
 
-SmartMotion SDK can be integrated into any Android application that requires real-time location tracking.
+SmartMotion SDK can be integrated into Android applications that require real-time location tracking.
 
-Example use cases include:
+Typical use cases include:
 
 - Delivery applications
 - Bike and scooter sharing systems
@@ -41,8 +22,9 @@ Example use cases include:
 - Shopping malls and visitor analytics
 - University campus applications
 - Event management systems
+- Dating applications
 
-Because the SDK continuously sends location updates, it can be used in any application that needs live movement analytics.
+The SDK continuously collects location updates and sends them to the backend, making it suitable for applications that require live movement analytics.
 
 ---
 
@@ -50,7 +32,7 @@ Because the SDK continuously sends location updates, it can be used in any appli
 
 Before integrating the SDK, make sure the following requirements are met.
 
-### Android Application
+## Android Application
 
 Your Android project should use:
 
@@ -59,19 +41,21 @@ Your Android project should use:
 - Internet permission
 - Fine Location permission
 
-### Backend Server
+## Backend Server
 
-Start the backend server before running the Android application.
+Start the backend server before launching the Android application.
 
-The SDK communicates with the backend using HTTP requests.
+The SDK communicates with the backend using REST API requests.
 
-### SmartMotion Dashboard
+## SmartMotion Dashboard
 
-Open the dashboard to monitor incoming location updates in real time.
+Verify that the dashboard is running before starting location tracking.
 
-Dashboard URL:
+The dashboard displays incoming location events in real time.
 
-https://smart-motion-f95mi8i9y-maya-yakobi.vercel.app/
+### Live Dashboard
+
+[Open SmartMotion Dashboard](https://smart-motion-f95mi8i9y-maya-yakobi.vercel.app/)
 
 ---
 
@@ -85,7 +69,7 @@ Integrating SmartMotion SDK requires only a few simple steps.
 4. Grant location permission.
 5. Start location tracking.
 6. Open the SmartMotion Dashboard.
-7. Watch live location updates.
+7. Monitor live location updates.
 
 The following sections explain each step in detail.
 
@@ -93,7 +77,7 @@ The following sections explain each step in detail.
 
 # Installation
 
-Add the SDK dependency to your Android project.
+Add the SmartMotion SDK dependency to your Android project.
 
 ```gradle
 dependencies {
@@ -112,11 +96,11 @@ Required Android permissions:
 ```
 
 After completing these steps, the SDK is ready to be configured and initialized.
+---
+
 # Implementation
 
 Integrating SmartMotion SDK into an Android application consists of four simple steps.
-
----
 
 ## Step 1 – Create the SDK Configuration
 
@@ -147,7 +131,7 @@ SmartMotion.initialize(
 During initialization the SDK:
 
 - Stores the SDK configuration.
-- Creates the internal networking client.
+- Creates the networking client.
 - Creates the location tracker.
 - Prepares the SDK for receiving location updates.
 
@@ -161,7 +145,7 @@ Before tracking can begin, the application must receive the Android location per
 
 If the permission is granted, the SDK can receive GPS updates.
 
-If the permission is denied, location tracking will not start.
+If the permission is denied, location tracking cannot begin.
 
 ---
 
@@ -177,10 +161,10 @@ SmartMotion.startTracking(
 
 Once tracking starts, the SDK automatically:
 
-- Receives GPS updates.
+- Requests GPS location updates.
 - Creates a `LocationData` object.
 - Sends every location update to the backend server.
-- Continues tracking until stopped.
+- Continues tracking until `stopTracking()` is called.
 
 No additional networking code is required.
 
@@ -188,57 +172,61 @@ No additional networking code is required.
 
 # Android Demo Application
 
-The project includes a demo Android application that demonstrates the SDK integration.
+The project includes an Android demo application that demonstrates how to integrate and test the SDK.
 
 <p align="center">
     <img src="../assets/android-demo.png" width="420"/>
 </p>
 
-The demo application includes:
+The demo application displays:
 
 - SDK Status
 - Tracking Status
 - User ID
 - Current Location
-- Last Update Time
+- Last Update
 - Server Status
 - Last Server Response
-- Start Tracking button
-- Stop Tracking button
 
-The application requests the required location permission, initializes the SDK and allows the developer to start or stop location tracking.
+The application also provides two actions:
+
+- **Start Tracking**
+- **Stop Tracking**
+
+These buttons allow developers to test the complete SDK workflow.
 
 ---
 
 # How to Use
 
-### Start Tracking
+## Start Tracking
 
 Press **Start Tracking**.
 
-The SDK begins requesting location updates from the device and automatically sends them to the backend.
+The SDK begins requesting GPS updates from the device and automatically sends every new location to the backend.
 
 ---
 
-### Stop Tracking
+## Stop Tracking
 
 Press **Stop Tracking**.
 
-The SDK stops requesting new GPS updates and no additional location events are sent.
+The SDK stops requesting location updates and no additional location events are sent.
 
 ---
 
-### Monitor the Dashboard
+## Monitor Live Data
 
 Open the SmartMotion Dashboard:
 
-https://smart-motion-f95mi8i9y-maya-yakobi.vercel.app/
+[Open SmartMotion Dashboard](https://smart-motion-f95mi8i9y-maya-yakobi.vercel.app/)
 
-While tracking is active you can observe:
+While tracking is active you can monitor:
 
-- Active users
-- New location events
-- Updated H3 heatmap
+- Live users
+- Incoming location events
+- Active H3 areas
+- Heatmap updates
 - Analytics charts
 - Connected applications
 
@@ -248,20 +236,21 @@ The dashboard refreshes automatically every five seconds.
 
 # Implementation Flow
 
-The SmartMotion workflow is straightforward:
+The SmartMotion workflow is:
 
 1. Initialize the SDK.
 2. Grant location permission.
 3. Start tracking.
 4. Receive GPS updates.
 5. Send location events to the backend.
-6. Store the data in PostgreSQL.
+6. Validate and store the data.
 7. Display live information in the SmartMotion Dashboard.
+
 # Creating a New Event
 
-In SmartMotion SDK, every location update is considered a new event.
+In SmartMotion SDK, every GPS location update is treated as a new location event.
 
-When location tracking is active, the SDK automatically creates a `LocationData` object for every GPS update received from the device.
+When location tracking is active, the SDK automatically creates a `LocationData` object for each location received from the device.
 
 Each event contains:
 
@@ -274,7 +263,7 @@ Each event contains:
 }
 ```
 
-The SDK sends the event to the backend using the configured API Key.
+The SDK sends every event to the backend using the configured API Key.
 
 The backend then:
 
@@ -282,9 +271,9 @@ The backend then:
 - Validates the location data
 - Generates an H3 spatial index
 - Stores the event in PostgreSQL
-- Makes the new data available to the dashboard
+- Makes the new data available to the SmartMotion Dashboard
 
-No additional code is required once tracking has started.
+Every received location update is treated as an independent location event.
 
 ---
 
@@ -320,7 +309,7 @@ SmartMotion.sendLocation(locationData)
 
 Sends a `LocationData` object directly to the backend.
 
-This function can be useful when location information is collected from another source instead of the built-in tracker.
+This function can be useful when location information is collected from another source instead of the built-in location tracker.
 
 ---
 
@@ -328,12 +317,12 @@ This function can be useful when location information is collected from another 
 
 The SmartMotion Dashboard provides a real-time view of the information collected by the SDK.
 
-Dashboard URL:
+### Live Dashboard
 
-https://smart-motion-f95mi8i9y-maya-yakobi.vercel.app/
+[Open SmartMotion Dashboard](https://smart-motion-f95mi8i9y-maya-yakobi.vercel.app/)
 
 <p align="center">
-    <img src="../assets/dashboard-overview.png" width="500"/>
+    <img src="../assets/dashboard-overview.png" width="420"/>
 </p>
 
 The dashboard displays:
@@ -343,37 +332,42 @@ The dashboard displays:
 - Active H3 Areas
 - Connected Applications
 
-The displayed information is updated automatically while new location events are received.
+The dashboard retrieves its data directly from the backend REST API and refreshes automatically every five seconds.
+
+---
+
+## Dashboard Sections
+
+The dashboard is divided into several sections.
+
+- Statistics cards summarize the current system status.
+- The Heatmap visualizes active H3 cells.
+- Analytics charts summarize the collected location events.
+- Connected Applications displays registered applications.
 
 ---
 
 # Live Heatmap
 
 <p align="center">
-    <img src="../assets/heatmap.png" width="500"/>
+    <img src="../assets/heatmap.png" width="420"/>
 </p>
 
-The heatmap groups nearby users into H3 cells.
+The heatmap groups nearby users into H3 spatial cells.
 
 Each H3 cell represents an area containing active users.
 
-Cell colors indicate activity level:
-
-- 🟢 Low activity
-- 🟡 Medium activity
-- 🔴 High activity
-
-This allows developers to quickly identify crowded areas.
+The map allows developers to quickly identify areas with higher activity.
 
 ---
 
 # Analytics
 
 <p align="center">
-    <img src="../assets/analytics.png" width="500"/>
+    <img src="../assets/analytics.png" width="420"/>
 </p>
 
-The analytics page summarizes the collected location data.
+The analytics page summarizes the location events received by the backend.
 
 Current analytics include:
 
@@ -417,18 +411,32 @@ Monitor guided tours and visualize visitor locations.
 
 ### Smart City Solutions
 
-Collect anonymous location information to analyze movement patterns across different areas.
+Analyze movement patterns across different areas.
+
+---
+
+### Shopping Centers
+
+Analyze visitor distribution and crowded areas inside large shopping complexes.
+
+---
+
+### Dating Applications
+
+Visualize nearby users and location activity in different areas.
+---
+
 # Best Practices
 
 To achieve the best results when using SmartMotion SDK, follow these recommendations.
 
 - Initialize the SDK only once during the application lifecycle.
-- Request location permission before starting location tracking.
-- Verify that the backend server is running before starting the SDK.
+- Grant location permission before starting location tracking.
+- Verify that the backend server is running.
 - Use a valid API Key configured on the backend.
-- Monitor the SmartMotion Dashboard to verify that new location events are being received.
+- Open the SmartMotion Dashboard to verify that new location events are being received.
 
-Following these guidelines helps ensure reliable communication between the Android application, the backend server and the dashboard.
+Following these recommendations helps ensure reliable communication between the Android application, the backend server and the SmartMotion Dashboard.
 
 ---
 
@@ -448,12 +456,12 @@ Initialize the SDK before calling any other SmartMotion function.
 
 ## No location updates are received
 
-Check the following:
+Verify that:
 
 - Location permission has been granted.
 - GPS is enabled on the device.
 - Tracking has been started.
-- The application has internet access.
+- The device has an internet connection.
 
 ---
 
@@ -479,27 +487,15 @@ The recommended demonstration flow is:
 3. Launch the Android Demo application.
 4. Initialize the SDK.
 5. Start location tracking.
-6. Observe new location events in the dashboard.
-7. View the updated heatmap and analytics.
+6. Observe incoming location events.
+7. View the updated Heatmap and Analytics pages.
 8. Stop location tracking.
 
-Dashboard:
+## Live Dashboard
 
-https://smart-motion-f95mi8i9y-maya-yakobi.vercel.app/
+[Open SmartMotion Dashboard](https://smart-motion-f95mi8i9y-maya-yakobi.vercel.app/)
 
 > **Demo Video:** *(Video link will be added here.)*
-
----
-
-# Summary
-
-The SmartMotion platform consists of three main components:
-
-- Android SDK for collecting location updates.
-- Node.js backend for processing and storing data.
-- SmartMotion Dashboard for visualizing live information.
-
-Together, these components provide a complete workflow for collecting, processing and displaying real-time location data.
 
 ---
 

@@ -20,7 +20,7 @@ The SmartMotion Dashboard provides live monitoring through statistics, H3 heatma
 
 ## Live Dashboard
 
-https://smart-motion-f95mi8i9y-maya-yakobi.vercel.app/
+[Open SmartMotion Dashboard](https://smart-motion-f95mi8i9y-maya-yakobi.vercel.app/)
 
 ---
 
@@ -115,7 +115,6 @@ Required permissions:
 
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 ```
-
 ---
 
 # Implementation
@@ -195,6 +194,7 @@ SmartMotion.stopTracking()
 Once tracking is stopped, the SDK unregisters the location callback and no additional location updates are sent.
 
 ---
+
 # SDK Public API
 
 The SDK exposes a small public API for Android applications.
@@ -235,7 +235,6 @@ The backend exposes REST endpoints used by both the Android SDK and the SmartMot
 | GET | `/api/top-areas` | Return the busiest H3 cells |
 | GET | `/api/apps` | Return connected applications |
 | GET | `/api/health` | Check server status |
-
 ---
 
 # Authentication
@@ -319,11 +318,13 @@ Database indexes:
 - Index on `userId`
 - Index on `h3Index`
 
+Indexes improve query performance for user lookups and H3-based aggregations.
+
 > **Note:** API Keys are stored in `config/apiKeys.js` and are validated before inserting location events into the database.
 
 ---
 
-# Performance
+# Database Performance
 
 | Operation | Complexity |
 |-----------|------------|
@@ -334,6 +335,7 @@ Database indexes:
 | Heatmap generation | **O(n)** |
 
 ---
+
 # System Diagrams
 
 ## Overall Architecture
@@ -375,7 +377,6 @@ D --> E["Store Location in PostgreSQL"]
 
 E --> F["Return JSON Response"]
 ```
-
 ---
 
 ## Database Model
@@ -453,7 +454,7 @@ The screenshots below demonstrate the Android application and the SmartMotion Da
 ## Android Demo Application
 
 <p align="center">
-  <img src="assets/android-demo.png" width="500"/>
+  <img src="assets/android-demo.png" width="420"/>
 </p>
 
 The Android application initializes the SDK, starts location tracking and sends live location updates to the backend.
@@ -463,7 +464,7 @@ The Android application initializes the SDK, starts location tracking and sends 
 ## SmartMotion Dashboard
 
 <p align="center">
-  <img src="assets/dashboard-overview.png" width="500"/>
+  <img src="assets/dashboard-overview.png" width="420"/>
 </p>
 
 The dashboard displays live statistics, connected applications and active users.
@@ -473,7 +474,7 @@ The dashboard displays live statistics, connected applications and active users.
 ## Live H3 Heatmap
 
 <p align="center">
-  <img src="assets/heatmap.png" width="500"/>
+  <img src="assets/heatmap.png" width="420"/>
 </p>
 
 The heatmap visualizes active users grouped into H3 spatial cells.
@@ -483,12 +484,13 @@ The heatmap visualizes active users grouped into H3 spatial cells.
 ## Analytics
 
 <p align="center">
-  <img src="assets/analytics.png" width="500"/>
+  <img src="assets/analytics.png" width="420"/>
 </p>
 
 The analytics view presents the busiest H3 cells and the current crowd distribution.
 
 ---
+
 # Demo Video
 
 A demonstration video will be added after the final recording.
@@ -506,7 +508,7 @@ The demonstration includes:
 
 ## Live Dashboard
 
-https://smart-motion-f95mi8i9y-maya-yakobi.vercel.app/
+[Open SmartMotion Dashboard](https://smart-motion-f95mi8i9y-maya-yakobi.vercel.app/)
 
 > **Demo Video:** *(Video link will be added here.)*
 
@@ -516,7 +518,7 @@ https://smart-motion-f95mi8i9y-maya-yakobi.vercel.app/
 
 Additional developer documentation is available in:
 
-```
+```text
 docs/DEVELOPER_GUIDE.md
 ```
 
