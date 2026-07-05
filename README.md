@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.png" alt="SmartMotion SDK Logo" width="320"/>
+  <img src="assets/logo.png" alt="SmartMotion SDK Logo" width="260"/>
 </p>
 
 <h1 align="center">SmartMotion SDK</h1>
@@ -10,33 +10,17 @@ Lightweight Android SDK for real-time location tracking, backend processing and 
 
 ---
 
-# Contents
-
-- [Overview](#overview)
-- [Features](#features)
-- [Technology Stack](#technology-stack)
-- [Project Structure](#project-structure)
-- [Installation](#installation)
-- [Implementation](#implementation)
-- [Quick Start](#quick-start)
-- [SDK Public API](#sdk-public-api)
-- [REST API](#rest-api)
-- [Database](#database)
-- [Performance](#performance)
-- [System Diagrams](#system-diagrams)
-- [Screenshots](#screenshots)
-- [Demo Video](#demo-video)
-- [Author](#author)
-
----
-
 # Overview
 
 SmartMotion SDK is an Android SDK that enables applications to collect GPS locations in real time and send them securely to a backend server.
 
-The backend validates every request, generates an H3 spatial index for each location, stores the data in PostgreSQL, and exposes REST endpoints that are consumed by the SmartMotion Console.
+The backend validates every request, generates an H3 spatial index for each location, stores the data in PostgreSQL, and exposes REST endpoints that are consumed by the SmartMotion Dashboard.
 
-The SmartMotion Console provides live monitoring through an interactive dashboard that includes statistics, H3 heatmaps and analytics.
+The SmartMotion Dashboard provides live monitoring through statistics, H3 heatmaps and analytics.
+
+## Live Dashboard
+
+https://smart-motion-f95mi8i9y-maya-yakobi.vercel.app/
 
 ---
 
@@ -44,7 +28,7 @@ The SmartMotion Console provides live monitoring through an interactive dashboar
 
 - Android SDK for real-time location tracking
 - Simple SDK integration
-- Continuous GPS updates
+- Continuous GPS location updates
 - Secure communication using Retrofit
 - API Key authentication
 - H3 spatial indexing
@@ -81,10 +65,25 @@ The SmartMotion Console provides live monitoring through an interactive dashboar
 SmartMotionSDK
 │
 ├── smartmotion-sdk/
+│   ├── models/
+│   ├── network/
+│   ├── tracking/
+│   ├── SmartMotion.kt
+│   ├── SmartMotionClient.kt
+│   └── SmartMotionConfig.kt
+│
 ├── backend-server/
+│   ├── config/
+│   ├── controllers/
+│   ├── routes/
+│   ├── services/
+│   └── utils/
+│
 ├── smartmotion-console/
+│   ├── app/
+│   └── components/
+│
 ├── assets/
-├── diagrams/
 ├── docs/
 └── README.md
 ```
@@ -92,6 +91,7 @@ SmartMotionSDK
 ---
 
 # Installation
+
 Add the SmartMotion SDK dependency to your Android project.
 
 ```gradle
@@ -104,25 +104,23 @@ Minimum requirements:
 
 - Android API 26+
 - Internet permission
-- Fine location permission
+- Fine Location permission
 
 Required permissions:
 
 ```xml
 <uses-permission android:name="android.permission.INTERNET"/>
 
-<uses-permission
-    android:name="android.permission.ACCESS_FINE_LOCATION"/>
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
-<uses-permission
-    android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 ```
 
 ---
 
 # Implementation
 
-The SmartMotion platform is composed of three main modules.
+The SmartMotion platform consists of three independent components that work together to provide end-to-end location tracking and visualization.
 
 ### Android SDK
 
@@ -143,7 +141,7 @@ Responsible for:
 - PostgreSQL storage
 - Analytics generation
 
-### SmartMotion Console
+### SmartMotion Dashboard
 
 Responsible for:
 
@@ -194,23 +192,26 @@ While tracking is active, the SDK:
 SmartMotion.stopTracking()
 ```
 
-Tracking stops immediately and no additional location updates are sent.
+Once tracking is stopped, the SDK unregisters the location callback and no additional location updates are sent.
 
 ---
-
 # SDK Public API
+
+The SDK exposes a small public API for Android applications.
 
 | Function | Description |
 |----------|-------------|
 | `initialize(context, config)` | Initializes the SDK. |
-| `isInitialized()` | Returns whether the SDK is initialized. |
-| `startTracking(userId)` | Starts GPS tracking. |
-| `stopTracking()` | Stops GPS tracking. |
-| `sendLocation(locationData)` | Sends a location manually. |
+| `isInitialized()` | Returns whether the SDK has been initialized. |
+| `startTracking(userId)` | Starts location tracking for a user. |
+| `stopTracking()` | Stops location tracking. |
+| `sendLocation(locationData)` | Sends a location manually to the backend. |
 
 ---
 
 # Internal Components
+
+The following classes are used internally by the SDK.
 
 | Class | Responsibility |
 |--------|----------------|
@@ -223,42 +224,46 @@ Tracking stops immediately and no additional location updates are sent.
 
 # REST API
 
+The backend exposes REST endpoints used by both the Android SDK and the SmartMotion Dashboard.
+
 | Method | Endpoint | Description |
 |---------|----------|-------------|
 | POST | `/api/location` | Save a location update |
-| GET | `/api/locations` | Latest location for each user |
-| GET | `/api/stats` | Dashboard statistics |
-| GET | `/api/heatmap` | H3 heatmap data |
-| GET | `/api/top-areas` | Most active H3 cells |
-| GET | `/api/apps` | Connected applications |
-| GET | `/api/health` | Server health status |
+| GET | `/api/locations` | Return the latest location of each active user |
+| GET | `/api/stats` | Return dashboard statistics |
+| GET | `/api/heatmap` | Return H3 heatmap data |
+| GET | `/api/top-areas` | Return the busiest H3 cells |
+| GET | `/api/apps` | Return connected applications |
+| GET | `/api/health` | Check server status |
 
 ---
 
 # Authentication
 
-Every SDK request includes an API Key:
+Every request sent by the SDK includes an API Key in the request header.
 
 ```http
+POST /api/location
+
 x-api-key: sm_demo_key_123
+Content-Type: application/json
 ```
 
 The backend validates:
 
 - API Key existence
-- Active API Key
+- API Key activity
 - Request payload
 
-Invalid requests return:
+If validation fails, the server returns:
 
 ```http
 401 Unauthorized
 ```
-# Sample Request
 
-```http
-POST /api/location
-```
+---
+
+# Sample Request
 
 ```json
 {
@@ -268,6 +273,8 @@ POST /api/location
   "timestamp": "2026-07-05T12:30:00Z"
 }
 ```
+
+---
 
 # Sample Response
 
@@ -293,7 +300,7 @@ POST /api/location
 
 # Database
 
-SmartMotion stores all location events in a PostgreSQL database.
+Each location received by the backend is stored as a separate event in the PostgreSQL database.
 
 | Column | Type |
 |---------|------|
@@ -312,7 +319,7 @@ Database indexes:
 - Index on `userId`
 - Index on `h3Index`
 
-> **Note:** API Keys are stored in `config/apiKeys.js` and are validated before inserting data into the database.
+> **Note:** API Keys are stored in `config/apiKeys.js` and are validated before inserting location events into the database.
 
 ---
 
@@ -323,11 +330,10 @@ Database indexes:
 | Insert location | **O(1)** |
 | Search by User ID | **O(log n)** |
 | Search by H3 Index | **O(log n)** |
-| Latest locations | **O(n)** |
+| Latest user locations | **O(n)** |
 | Heatmap generation | **O(n)** |
 
 ---
-
 # System Diagrams
 
 ## Overall Architecture
@@ -348,7 +354,7 @@ Api --> Backend["Node.js + Express"]
 
 Backend --> DB["PostgreSQL"]
 
-Backend --> Console["Next.js Dashboard"]
+Backend --> Dashboard["Next.js Dashboard"]
 ```
 
 ---
@@ -361,11 +367,11 @@ flowchart TD
 A["POST /api/location"]
 --> B["Validate API Key"]
 
-B --> C["Validate Location"]
+B --> C["Validate Location Data"]
 
 C --> D["Generate H3 Index"]
 
-D --> E["Store in PostgreSQL"]
+D --> E["Store Location in PostgreSQL"]
 
 E --> F["Return JSON Response"]
 ```
@@ -437,9 +443,10 @@ Backend-->>SDK: Response
 ```
 
 ---
+
 # Screenshots
 
-The following screenshots present the main components of the SmartMotion platform.
+The screenshots below demonstrate the Android application and the SmartMotion Dashboard.
 
 ---
 
@@ -453,7 +460,7 @@ The Android application initializes the SDK, starts location tracking and sends 
 
 ---
 
-## SmartMotion Console
+## SmartMotion Dashboard
 
 <p align="center">
   <img src="assets/dashboard-overview.png" width="500"/>
@@ -482,26 +489,51 @@ The heatmap visualizes active users grouped into H3 spatial cells.
 The analytics view presents the busiest H3 cells and the current crowd distribution.
 
 ---
-
 # Demo Video
 
-A short demonstration video will be added after the final recording.
+A demonstration video will be added after the final recording.
 
-The video demonstrates:
+The demonstration includes:
 
-- SDK initialization
-- Starting location tracking
-- Sending location updates
-- Backend processing
-- Live dashboard updates
-- H3 heatmap visualization
+1. Starting the backend server.
+2. Opening the SmartMotion Dashboard.
+3. Launching the Android Demo application.
+4. Initializing the SDK.
+5. Starting location tracking.
+6. Sending live location updates.
+7. Viewing live updates in the dashboard.
+8. Stopping location tracking.
 
-> **Demo Video:** *(Link will be added here.)*
+## Live Dashboard
+
+https://smart-motion-f95mi8i9y-maya-yakobi.vercel.app/
+
+> **Demo Video:** *(Video link will be added here.)*
+
+---
+
+# Documentation
+
+Additional developer documentation is available in:
+
+```
+docs/DEVELOPER_GUIDE.md
+```
+
+The guide explains:
+
+- SDK integration
+- Configuration
+- Implementation
+- Public SDK functions
+- Creating location events
+- Dashboard usage
+- Example use cases
 
 ---
 
 # Author
 
-Developed by:
+Developed and maintained by
 
 **Maya Yakobi**
