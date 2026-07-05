@@ -12,11 +12,12 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.smartmotion.sdk.SmartMotion
 import com.smartmotion.sdk.SmartMotionConfig
+import java.util.UUID
 
 class MainActivity : AppCompatActivity() {
 
     private val locationPermissionRequestCode = 1001
-    private val demoUserId = "user_123"
+    private lateinit var demoUserId: String
 
     private lateinit var sdkStatusText: TextView
     private lateinit var trackingStatusText: TextView
@@ -32,6 +33,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        demoUserId = getOrCreateUserId()
 
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
@@ -108,7 +111,7 @@ class MainActivity : AppCompatActivity() {
     private fun initializeSmartMotion() {
         val config = SmartMotionConfig(
             apiKey = "sm_demo_key_123",
-            serverUrl = "http://10.0.2.2:3000"
+            serverUrl = "https://smartmotion-api.onrender.com"
         )
 
         SmartMotion.initialize(this, config)
@@ -147,6 +150,23 @@ class MainActivity : AppCompatActivity() {
     private fun getCurrentTime(): String {
         val formatter = java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.getDefault())
         return formatter.format(java.util.Date())
+    }
+
+    private fun getOrCreateUserId(): String {
+        val prefs = getSharedPreferences("smartmotion_prefs", MODE_PRIVATE)
+        val existingUserId = prefs.getString("user_id", null)
+
+        if (existingUserId != null) {
+            return existingUserId
+        }
+
+        val newUserId = "user_" + UUID.randomUUID().toString().take(8)
+
+        prefs.edit()
+            .putString("user_id", newUserId)
+            .apply()
+
+        return newUserId
     }
 
     override fun onRequestPermissionsResult(
