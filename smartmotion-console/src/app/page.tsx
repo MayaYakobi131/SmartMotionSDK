@@ -65,6 +65,24 @@ function formatLocationTime(location: LocationData) {
   return date.toLocaleTimeString();
 }
 
+function formatUserName(userId: string) {
+  if (!userId) return "Unknown User";
+
+  if (userId.startsWith("user_")) {
+    return `User #${userId.replace("user_", "").slice(0, 4).toUpperCase()}`;
+  }
+
+  return userId;
+}
+
+function formatAppName(appId: string) {
+  if (appId === "demo_android_app") {
+    return "SmartMotion Android Demo";
+  }
+
+  return appId;
+}
+
 function StatCard({
   title,
   value,
@@ -131,11 +149,11 @@ export default async function Home() {
     },
   ];
 
- return (
-  <main className="min-h-screen text-[#233142]">
-    <AutoRefresh />
+  return (
+    <main className="min-h-screen text-[#233142]">
+      <AutoRefresh />
 
-    <nav className="sticky top-0 z-[9999] border-b border-[#E3ECF7] bg-white/85 backdrop-blur-xl">
+      <nav className="sticky top-0 z-[9999] border-b border-[#E3ECF7] bg-white/85 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
           <div>
             <p className="text-2xl font-extrabold tracking-tight">
@@ -296,7 +314,12 @@ export default async function Home() {
                     className="rounded-[28px] bg-[#DDF6E8] p-5 shadow-sm"
                   >
                     <p className="text-sm text-[#6B7280]">Application</p>
-                    <p className="mt-2 text-xl font-black">{app.appId}</p>
+                    <p className="mt-2 text-xl font-black">
+                      {formatAppName(app.appId)}
+                    </p>
+                    <p className="mt-1 text-xs font-mono text-[#6B7280]">
+                      {app.appId}
+                    </p>
                     <p className="mt-3 text-sm text-[#6B7280]">
                       Current Live Users
                     </p>
@@ -351,9 +374,9 @@ export default async function Home() {
                         className="border-t border-[#DBEAFE]"
                       >
                         <td className="px-4 py-3 font-extrabold text-xl">
-                         <span className="font-extrabold text-[#233142]">
-                          {index + 1}
-                           </span>
+                          <span className="font-extrabold text-[#233142]">
+                            {index + 1}
+                          </span>
                         </td>
 
                         <td className="px-4 py-3">
@@ -403,7 +426,14 @@ export default async function Home() {
                     className="rounded-[26px] border border-[#DBEAFE] bg-[#F7FBFF] p-4"
                   >
                     <div className="flex items-center justify-between">
-                      <p className="font-extrabold">{location.userId}</p>
+                      <div>
+                        <p className="font-extrabold">
+                          {formatUserName(location.userId)}
+                        </p>
+                        <p className="mt-1 text-xs font-mono text-[#6B7280]">
+                          {location.userId}
+                        </p>
+                      </div>
                       <p className="text-sm text-[#6B7280]">
                         {formatLocationTime(location)}
                       </p>

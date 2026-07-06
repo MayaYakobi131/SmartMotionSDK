@@ -5,12 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
+import com.google.android.gms.location.*
 import com.smartmotion.sdk.models.LocationData
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -26,9 +21,14 @@ class LocationTracker(
         LocationServices.getFusedLocationProviderClient(context)
 
     private var locationCallback: LocationCallback? = null
+    private var isTracking = false
 
     @SuppressLint("MissingPermission")
     fun startTracking(userId: String) {
+        if (isTracking) {
+            println("Tracking is already active")
+            return
+        }
 
         if (
             ContextCompat.checkSelfPermission(
@@ -50,7 +50,6 @@ class LocationTracker(
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 for (location in locationResult.locations) {
-
                     val locationData = LocationData(
                         userId = userId,
                         latitude = location.latitude,
@@ -59,7 +58,6 @@ class LocationTracker(
                     )
 
                     println("New location received: $locationData")
-
                     onLocationUpdate(locationData)
                 }
             }
@@ -71,14 +69,17 @@ class LocationTracker(
             context.mainLooper
         )
 
+        isTracking = true
         println("Tracking started")
     }
 
     fun stopTracking() {
         locationCallback?.let {
             fusedLocationClient.removeLocationUpdates(it)
-            locationCallback = null
         }
+
+        locationCallback = null
+        isTracking = false
 
         println("Tracking stopped")
     }
