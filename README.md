@@ -115,6 +115,7 @@ Required permissions:
 
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 ```
+
 ---
 
 # Implementation
@@ -206,9 +207,6 @@ The SDK exposes a small public API for Android applications.
 | `startTracking(userId)` | Starts location tracking for a user. |
 | `stopTracking()` | Stops location tracking. |
 | `sendLocation(locationData)` | Sends a location manually to the backend. |
-
----
-
 # Internal Components
 
 The following classes are used internally by the SDK.
@@ -235,6 +233,7 @@ The backend exposes REST endpoints used by both the Android SDK and the SmartMot
 | GET | `/api/top-areas` | Return the busiest H3 cells |
 | GET | `/api/apps` | Return connected applications |
 | GET | `/api/health` | Check server status |
+
 ---
 
 # Authentication
@@ -488,12 +487,7 @@ The heatmap visualizes active users grouped into H3 spatial cells.
 </p>
 
 The analytics view presents the busiest H3 cells and the current crowd distribution.
-
----
-
 # Demo Video
-
-A demonstration video will be added after the final recording.
 
 The demonstration includes:
 
@@ -510,7 +504,9 @@ The demonstration includes:
 
 [Open SmartMotion Dashboard](https://smart-motion-f95mi8i9y-maya-yakobi.vercel.app/)
 
-> **Demo Video:** *(Video link will be added here.)*
+## Demo Video
+
+[Watch SmartMotion SDK Demo](https://www.renderforest.com/watch-117362347?queue_id=193896427&quality=0)
 
 ---
 

@@ -96,6 +96,7 @@ Required Android permissions:
 ```
 
 After completing these steps, the SDK is ready to be configured and initialized.
+
 ---
 
 # Implementation
@@ -167,7 +168,6 @@ Once tracking starts, the SDK automatically:
 - Continues tracking until `stopTracking()` is called.
 
 No additional networking code is required.
-
 ---
 
 # Android Demo Application
@@ -310,9 +310,6 @@ SmartMotion.sendLocation(locationData)
 Sends a `LocationData` object directly to the backend.
 
 This function can be useful when location information is collected from another source instead of the built-in location tracker.
-
----
-
 # SmartMotion Dashboard
 
 The SmartMotion Dashboard provides a real-time view of the information collected by the SDK.
@@ -424,6 +421,7 @@ Analyze visitor distribution and crowded areas inside large shopping complexes.
 ### Dating Applications
 
 Visualize nearby users and location activity in different areas.
+
 ---
 
 # Best Practices
@@ -437,9 +435,6 @@ To achieve the best results when using SmartMotion SDK, follow these recommendat
 - Open the SmartMotion Dashboard to verify that new location events are being received.
 
 Following these recommendations helps ensure reliable communication between the Android application, the backend server and the SmartMotion Dashboard.
-
----
-
 # Troubleshooting
 
 ## The SDK is not initialized
@@ -478,8 +473,6 @@ Verify that:
 
 # Demo Video
 
-A demonstration video will be added after the final recording.
-
 The recommended demonstration flow is:
 
 1. Start the backend server.
@@ -495,7 +488,9 @@ The recommended demonstration flow is:
 
 [Open SmartMotion Dashboard](https://smart-motion-f95mi8i9y-maya-yakobi.vercel.app/)
 
-> **Demo Video:** *(Video link will be added here.)*
+## Demo Video
+
+[Watch SmartMotion SDK Demo](https://www.renderforest.com/watch-117362347?queue_id=193896427&quality=0)
 
 ---
 
